@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Image Bed</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f6f7f9;
+      color: #1f2328;
+    }
+
+    header {
+      padding: 18px 24px;
+      background: #fff;
+      border-bottom: 1px solid #d8dee4;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .crumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .crumbs button {
+      border: 0;
+      background: #eef2f6;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .item {
+      background: #fff;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .folder {
+      padding: 18px;
+      font-weight: 600;
+    }
+
+    .folder::before {
+      content: "📁 ";
+    }
+
+    .image img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      background: #eef2f6;
+    }
+
+    .name {
+      padding: 10px;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .empty,
+    .loading,
+    .error {
+      padding: 24px;
+      background: #fff;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Image Bed</h1>
+    <div id="crumbs" class="crumbs"></div>
+  </header>
+
+  <main>
+    <div id="content" class="loading">加载中...</div>
+  </main>
+
+  <script>
+    const OWNER = "lyloou";
+    const REPO = "bed";
+    const BRANCH = "master";
+
+    const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".svg"];
+
+    const content = document.getElementById("content");
+    const crumbs = document.getElementById("crumbs");
+
+    function isImage(name) {
+      const lower = name.toLowerCase();
+      return IMAGE_EXTS.some(ext => lower.endsWith(ext));
+    }
+
+    function renderCrumbs(path) {
+      const parts = path ? path.split("/") : [];
+      crumbs.innerHTML = "";
+
+      const root = document.createElement("button");
+      root.textContent = "root";
+      root.onclick = () => loadDir("");
+      crumbs.appendChild(root);
+
+      let current = "";
+      parts.forEach(part => {
+        current = current ? `${current}/${part}` : part;
+
+        const btn = document.createElement("button");
+        btn.textContent = part;
+        btn.onclick = () => loadDir(current);
+        crumbs.appendChild(btn);
+      });
+    }
+
+    async function loadDir(path) {
+      renderCrumbs(path);
+      content.className = "loading";
+      content.textContent = "加载中...";
+
+      const apiUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
+
+      try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) {
+          throw new Error(`GitHub API 请求失败：${res.status}`);
+        }
+
+        const items = await res.json();
+        const visibleItems = items
+          .filter(item => item.type === "dir" || isImage(item.name))
+          .sort((a, b) => {
+            if (a.type !== b.type) return a.type === "dir" ? -1 : 1;
+            return a.name.localeCompare(b.name);
+          });
+
+        if (!visibleItems.length) {
+          content.className = "empty";
+          content.textContent = "这个目录下没有可展示的图片。";
+          return;
+        }
+
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        visibleItems.forEach(item => {
+          const card = document.createElement("div");
+          card.className = `item ${item.type === "dir" ? "folder" : "image"}`;
+
+          if (item.type === "dir") {
+            card.textContent = item.name;
+            card.onclick = () => loadDir(item.path);
+          } else {
+            const img = document.createElement("img");
+            img.src = item.download_url;
+            img.alt = item.name;
+            img.loading = "lazy";
+
+            const name = document.createElement("div");
+            name.className = "name";
+            name.textContent = item.name;
+
+            card.onclick = () => window.open(item.download_url, "_blank");
+            card.appendChild(img);
+            card.appendChild(name);
+          }
+
+          grid.appendChild(card);
+        });
+
+        content.className = "";
+        content.innerHTML = "";
+        content.appendChild(grid);
+      } catch (e) {
+        content.className = "error";
+        content.textContent = e.message;
+      }
+    }
+
+    loadDir("");
+  </script>
+</body>
+</html>
