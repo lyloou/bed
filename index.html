@@ -310,7 +310,8 @@
       animation: lift 420ms ease both;
     }
 
-    .image-card {
+    .image-card,
+    .file-card {
       display: grid;
       grid-template-rows: 132px 1fr;
       height: 250px;
@@ -342,13 +343,15 @@
       background: #252520;
     }
 
-    .image-meta {
+    .image-meta,
+    .file-meta {
       display: grid;
       gap: 10px;
       padding: 12px;
     }
 
-    .image-name {
+    .image-name,
+    .file-name {
       min-height: 0;
       color: var(--paper);
       font-size: 14px;
@@ -360,16 +363,18 @@
       -webkit-line-clamp: 2;
     }
 
-    .image-actions {
+    .image-actions,
+    .file-actions {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 7px;
     }
 
-    .file-card {
-      height: 250px;
-      padding: 16px;
-      cursor: pointer;
+    .file-preview {
+      display: flex;
+      align-items: flex-start;
+      padding: 28px;
+      background: rgba(37, 37, 32, 0.72);
     }
 
     .file-badge {
@@ -382,21 +387,6 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 11px;
       text-transform: uppercase;
-    }
-
-    .file-name {
-      margin: 26px 0 18px;
-      min-height: 52px;
-      color: var(--paper);
-      font-size: 22px;
-      line-height: 1.18;
-      word-break: break-word;
-    }
-
-    .file-actions {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 7px;
     }
 
     .mini {
@@ -958,13 +948,17 @@
       const url = fileUrl(item.path);
       return `
         <article class="file-card" data-card-preview="${escapeHtml(item.path)}">
-          <span class="file-badge">${escapeHtml(fileExt(item.name))}</span>
-          <div class="file-name">${escapeHtml(item.name)}</div>
-          <div class="file-actions">
-            <button class="mini" type="button" data-preview="${escapeHtml(item.path)}">Preview</button>
-            <button class="mini" type="button" data-open="${escapeHtml(url)}">Open</button>
-            <button class="mini" type="button" data-copy="${escapeHtml(url)}">URL</button>
-            <button class="mini" type="button" data-md="${escapeHtml(`[${item.name}](${url})`)}">MD</button>
+          <div class="file-preview">
+            <span class="file-badge">${escapeHtml(fileExt(item.name))}</span>
+          </div>
+          <div class="file-meta">
+            <div class="file-name">${escapeHtml(item.name)}</div>
+            <div class="file-actions">
+              <button class="mini" type="button" data-preview="${escapeHtml(item.path)}">Preview</button>
+              <button class="mini" type="button" data-open="${escapeHtml(url)}">Open</button>
+              <button class="mini" type="button" data-copy="${escapeHtml(url)}">URL</button>
+              <button class="mini" type="button" data-md="${escapeHtml(`[${item.name}](${url})`)}">MD</button>
+            </div>
           </div>
         </article>
       `;
