@@ -1,0 +1,20 @@
+index.html
+  s_1e56306e56fea1::t_bac4900427d2eb 313-314,346-347,353-354,366-367,373-377
+  s_1e56306e56fea1::t_4e0c07c32a868b 951-961
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "467e03c75187ac55c8b35a3c39bcfa879837225b",
+  "prompts": {},
+  "sessions": {
+    "s_1e56306e56fea1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e90ab-ea76-7d41-980e-79fd7c1c2131",
+        "model": "gpt-5.5"
+      },
+      "human_author": "lilou <lyloou@qq.com>"
+    }
+  }
+}
