@@ -1,0 +1,19 @@
+index.html
+  s_1e56306e56fea1::t_584cfba78a2b48 91-121,579-582,624-631
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4dda5b82414dc11b4c37184338721c4e74224ff0",
+  "prompts": {},
+  "sessions": {
+    "s_1e56306e56fea1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e90ab-ea76-7d41-980e-79fd7c1c2131",
+        "model": "gpt-5.5"
+      },
+      "human_author": "lilou <lyloou@qq.com>"
+    }
+  }
+}
